@@ -36,7 +36,7 @@ class GPTService:
     async def compare_query_with_description(self, query: str, description: str):
         response = await self.client.chat.completions.create(
             model="gpt-4o",
-            messages=[{'role': 'user', 'content': f"Сравни запрос '{query}' с описанием '{description}'."}]
+            messages=[{'role': 'user', 'content': f"По запросу {query} был получен профиль с описанием: {description}. Сопоставь их и кратко (до 70 слов) расскажи ищущему, чем подходит ему найденный профиль."}]
         )
         return response.choices[0].message.content
 
