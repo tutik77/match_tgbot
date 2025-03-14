@@ -25,12 +25,11 @@ async def search2(message: types.Message):
 
     keywords = await gpt_service.get_keywords_from_query(query)
     users = await search_service.search_users_by_keywords(keywords)
- 
+
     if not users:
         await message.answer("По запросу не найдено профилей.")
         return
     
-    print(f"{users = }")
     await message.answer("По запросу найдены профили:")
     for user in users:
         comparison = await gpt_service.compare_query_with_description(query, user["description"])
