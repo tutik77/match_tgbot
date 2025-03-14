@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  database:
+    image: postgres:latest
+    container_name: database
+    volumes:
+      - db:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DB=Users
+    restart: always
+    networks:
+      - app-network
+
+  django:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: django_api
+    restart: always
+    volumes:
+      - ./app:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:1234@database:5432/Users
+    depends_on:
+      - database
+    networks:
+      - app-network
+
+  bot:
+    build:
+      context: ./bot
+      dockerfile: Dockerfile
+    container_name: telegram_bot
+    restart: always
+    volumes:
+      - ./bot:/bot
+    env_file:
+      - ./bot/.env
+    depends_on:
+      - django
+    networks:
+      - app-network
+
+volumes:
+  db:
+
+networks:
+  app-network:
+    driver: bridge
